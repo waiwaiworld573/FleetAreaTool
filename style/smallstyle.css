@@ -8,7 +8,21 @@
   width:100%;
   background-color:#ddffff;
 }
+.kantaiHenseiAll > label{
+  display:none;
+}
 
+.kantaiHenseiAll > details{
+  font-size:10pt;
+}
+.btn_deckbuilder{
+  height:auto;
+  width:100%;
+  font-size:0.7em;
+}
+.kantaiHenseiAll > select{
+  width:78px;
+}
 .maincontents{
   width:100%;
   background-color:#ffffdd;
@@ -31,6 +45,13 @@
   background-color: white;
 /*   flex-grow: 1; */
 /*   height:calc(100% - 90px); */
+}
+.henseiName{
+  resize:none;
+}
+
+textarea{
+  width:100%;
 }
 
 .sheet_tab {
@@ -108,13 +129,12 @@ input:checked + .tab_class + .kantaiList {
 
 .kantaiHensei {
   display:block;
-  float: none;
-  width: auto;
+  float:none;
+  width:auto;
   position:relative;
   height:100%;
 /*   margin:1em auto; */
   padding:3pt;
-  
 }
 
 .kantaiItem {
@@ -128,7 +148,8 @@ input:checked + .tab_class + .kantaiList {
   line-height:12px;
   padding:2px;
   width: calc(100%/4 - 8px);
-  height:auto;
+  
+  max-height:calc(2em + 2px);
   position:relative;
 }
 
@@ -138,14 +159,17 @@ input:checked + .tab_class + .kantaiList {
   background-color: gray;
   color: white;
   margin: 2px;
-/*   padding:2px; */
-    font-size:0.8em;
   float:none;
+  margin-left:auto;
+  margin-right:auto;
+  font-size:0.8em;
   line-height:12px;
-  width: calc(100% - 8px);
-  height:32px;
+  padding:2px;
+  width:65px;
+ 
+  height:calc(2em + 2px);
   position:relative;  
-border: 2px solid;
+/* border: 2px solid; */
 }
 
 .kantaiList {
@@ -167,41 +191,57 @@ border: 2px solid;
 
 .shiplv{
   float: left;
-
+  font-size:0.6em;
+  position:relative;
 }
 
-.shiparea{
-/*   text-align: right; */
-  float:none;
-  height:10pt;
-    transform:scale(0.3) rotate(30deg) translate(40px,-120px);
-  
 
-  /* height:10px; */
-  
-/*   vertical-align:top; */
-/*   margin-right: 0em; */
-/*   text-align:justify; */
-/*   width:10px; */
-/*   position:absolute; */
-/*      top:3; */
-/*   right:3;  */
-/*   zorder:4; */
-/* font-size:0.05em; */
-writing-mode: vertical-rl;
+.henseiItem > .shiparea{
+/*   display:none; */
+/*   display:inline-flex; */
+  float:right;
+  position:absolute;
+  top:2em;
+  right:0.2em;
+/*  transform:translate(0em,-0.1em) ; */
+/*   transform:translate(em) ; */
+ font-size:0.7em;  
+}
+.henseiItem > .shipname{
+white-space: nowrap;
+overflow: hidden;
+padding:0.2em;
+float:none;
+}
+
+.kantaiItem > .shiparea{
+/*   float:right;
+  position:relative;
+  transform:translate(0em,-1.5em) ;
+ font-size:0.7em; */
+/*   display:none; */
+/*   display:inline-flex; */
+  float:right;
+  position:absolute;
+  top:2em;
+  right:0.2em;
+/*  transform:translate(0em,-0.1em) ; */
+/*   transform:translate(em) ; */
+ font-size:0.7em;  
 }
 
 .shipname{
   white-space: nowrap;
   overflow: hidden;
-  padding:0.2em 0em;
-  
+  padding:0.2em;
+/*  color:aqua;   */
 
   
 }
 
 .kantaiHenseiAll{
   vertical-align:top;
+  width:80px;
 
   
 }
@@ -247,7 +287,7 @@ font-size:0.5em;
 }
 
 .splitRight{
-  overflow-x:scroll;
+/*   overflow-x:scroll; */
   overflow-y:scroll;
   background-color:pink;
 //  height:calc(100vh - 50pt);
@@ -266,7 +306,7 @@ font-size:0.5em;
 
 .txt_fudaText{
   width:100px;
-
+white-space:nowrap;
 }
 
 .kantaiList {

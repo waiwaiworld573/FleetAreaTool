@@ -735,12 +735,9 @@
        }
         
       //ウインドウサイズ変更時に実行(cssへの敗北)
-      //window.onresize = function () {
-        //for (let a of document.getElementsByClassName('kantaiList')) {
-          //   a.setAttribute('height',"100px");
-          //a.style.height = (window.innerHeight - a.getBoundingClientRect().top - 5) + "px";
-        //}
-      //};
+      window.onresize = function () {
+              adjustLayout();
+      };
       //艦隊情報読み込み
       function inputKanmusuData() {
         //テキストボックスの文字列を取得
@@ -749,7 +746,7 @@
         localStorage.setItem('kantaibunsekitxt', newTxt);
         //正規表現パターンを設定して検索
         let regexpNames = /\"api_ship_id\":(\d+),\"api_lv\":(\d+)/ig;
-        let match = regexpNames.exec(newTxt);
+        let match;// = regexpNames.exec(newTxt);
         //リストを初期化
         for (tab_sort of event.target.closest('.splitLeft').getElementsByClassName("kantaiList")) {
           while (tab_sort.firstChild) {
@@ -1364,15 +1361,16 @@ event.target.previousElementSibling.previousElementSibling.style.backgroundColor
         //radioの識別のためsheetIDを取得
 
         let sIDtext = sc.previousElementSibling.getAttribute('for');
-        e3 = document.createElement("input");
-        e3.setAttribute('type','radio');
-        e3.setAttribute('name',sIDtext + '_kantai');
-        e3.setAttribute('value','kantai_reset');
-        e3.Id = sIDtext + '_reset';
-        e3.checked=true;
-        e2.appendChild(e3.cloneNode(true));
+        e4 = document.createElement("input");
+        e4.setAttribute('type','radio');
+        e4.setAttribute('name',sIDtext + '_kantai');
+        e4.setAttribute('value','kantai_reset');
+        e4.Id = sIDtext + '_reset';
+        e4.checked=true;
+        //e2.appendChild(e3.cloneNode(true));
         e3 = document.createElement("label");
-        e3.setAttribute('for',sIDtext + '_reset');
+        //e3.setAttribute('for',sIDtext + '_reset');
+        e3.appendChild(e4.cloneNode(true));
         e3.append(document.createTextNode('艦隊の置き換え(艦娘は全て編成を解除されます)'));
         e2.appendChild(e3.cloneNode(true));              
         //<br>
@@ -1393,14 +1391,15 @@ event.target.previousElementSibling.previousElementSibling.style.backgroundColor
         e2.appendChild(document.createElement('br'));
 
               
-        e3 = document.createElement("input");
-        e3.setAttribute('type','radio');
-        e3.setAttribute('name',sIDtext + '_kantai');
-        e3.setAttribute('value','kantai_replace');
-        e3.Id = sIDtext + '_replace';
-        e2.appendChild(e3.cloneNode(true));
+        e4 = document.createElement("input");
+        e4.setAttribute('type','radio');
+        e4.setAttribute('name',sIDtext + '_kantai');
+        e4.setAttribute('value','kantai_replace');
+        e4.Id = sIDtext + '_replace';
+        // e4.appendChild(e3.cloneNode(true));
         e3 = document.createElement("label");
-        e3.setAttribute('for',sIDtext + '_replace');
+        // e3.setAttribute('for',sIDtext + '_replace');
+        e3.appendChild(e4.cloneNode(true));  
         e3.append(document.createTextNode('別のシートの艦隊を用いて可能な限り現編成を再現'));
         e2.appendChild(e3.cloneNode(true));  
         //<br>
@@ -1524,6 +1523,7 @@ e3.classList.add('defaultHideRadios');
 //ここまで
           e3.setAttribute('name', sc.previousElementSibling.getAttribute('for') + '_kanshu');
           e3.id = idNames[i];
+        　e3.setAttribute('onclick','adjustLayout()')
           e3.checked = (i === 0);
           f.append(e3.cloneNode(true));
           //label class = "tab_class"～
@@ -1594,7 +1594,7 @@ e5 = document.createElement("textarea");　
         e5 = document.createElement("select");
         //札のドロップダウンリスト
         e5.classList.add('lst_fudaList');
-        e5.setAttribute('onchange', 'selectHenseiFuda();');
+        e5.setAttribute('onchange', 'selectHenseiFuda()');
         f.append(e5.cloneNode(true));
         //<br>
         　
@@ -1642,12 +1642,15 @@ e5 = document.createElement("textarea");　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
         e6 = document.createElement("summary");
-        e6.append(document.createTextNode("外部ツール連携"));　
+        e6.append(document.createTextNode("外部連携"));　
+        e5.appendChild(e6.cloneNode(true));
+        e6 = document.createElement("label");
+        e6.innerHTML="デッキビルダー形式";
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
         e6.classList.add("txtr_deckbuilder");
-        e6.setAttribute('oninput', 'ChangeTokkouList();');
-        e5.appendChild(e6.cloneNode(true));　
+        e6.setAttribute('onfocus',"copyDeckText();this.select();");
+        e5.appendChild(e6.cloneNode(true));
         f.append(e5.cloneNode(true));
         e4.appendChild(f.cloneNode(true));
         e3.appendChild(e4.cloneNode(true));
@@ -1719,8 +1722,155 @@ e5 = document.createElement("textarea");　
       //編成での札選択
       function selectHenseiFuda(){
         for (let i of event.target.parentNode.getElementsByClassName('henseiItem')){
-          
+          if (event.target.closest('.splitRight').getElementsByClassName(i.classList[0]).length === 1 ){
+                  
+          }else{
+                  
+          }
+
+                
         }
+      }
+
+//保存
+async function saveCsvFile(){
+    let opts = {
+    suggestedName: '編成シート',
+    types: [{
+      description: 'Csv file',
+      accept: {'text/csv': ['.csv']},
+    }],
+  };        
+let khAllArray = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked')[0].nextElementSibling.nextElementSibling.getElementsByClassName('kantaiHenseiAll');
+let csvData =[["編成名","出撃札","編成部隊","編成1","編成2","編成3","編成4","編成5","編成6","編成7","編成8","編成9","編成10","編成11","編成12","編成条件","特効情報"]];
+makeCsvStr="";
+for (let khAll of khAllArray){
+hIArray=[];
+for (let hI of khAll.getElementsByClassName('henseiItem')){
+ hIArray.push(
+    hI.querySelector('.shipname').textContent 
+    + (hI.querySelector('.shipname').textContent !== "編成なし" ? hI.querySelector('.shiplv').textContent : "" )
+  );
+}
+while(hIArray.length < 12){
+  hIArray.push("-");
+}
+csvData.push(
+[
+'"' + khAll.querySelector('.henseiName').value + '"',
+'"' + khAll.querySelector('.lst_fudaList').value + '"',
+khAll.querySelector('.lit_kantaiSize').value,
+hIArray[0],hIArray[1],hIArray[2],hIArray[3],hIArray[4],hIArray[5],hIArray[6],hIArray[7],hIArray[8],hIArray[9],hIArray[10],hIArray[11],
+'"' + khAll.querySelector('.txtr_kantaiCaution').value + '"',
+'"' + khAll.querySelector('.txtr_kantaitokkou').value + '"'
+]
+);
+
+}
+const transpose = a => a[0].map((_, c) => a.map(r => r[c]));
+        
+for (let csvRow of transpose(csvData)){
+makeCsvStr += csvRow.join() + '\n';
+}
+        let handle = await window.showSaveFilePicker(opts);
+  let writable = await handle.createWritable();
+  await writable.write(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), makeCsvStr], {type: 'text/csv'}));
+  await writable.close();
+
+}
+
+
+            
+            
+function makeCsvStr(){
+let khAllArray = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked')[0].nextElementSibling.nextElementSibling.getElementsByClassName('kantaiHenseiAll');
+let csvData =[["編成名","出撃札","編成部隊","編成1","編成2","編成3","編成4","編成5","編成6","編成7","編成8","編成9","編成10","編成11","編成12","編成条件","特効情報"]];
+makeCsvStr="";
+for (let khAll of khAllArray){
+hIArray=[];
+for (let hI of khAll.getElementsByClassName('henseiItem')){
+ hIArray.push(
+    hI.querySelector('.shipname').textContent 
+    + (hI.querySelector('.shipname').textContent !== "編成なし" ? hI.querySelector('.shiplv').textContent : "" )
+  );
+}
+while(hIArray.length < 12){
+  hIArray.push("-");
+}
+csvData.push(
+[
+'"' + khAll.querySelector('.henseiName').value + '"',
+'"' + khAll.querySelector('.lst_fudaList').value + '"',
+khAll.querySelector('.lit_kantaiSize').value,
+hIArray[0],hIArray[1],hIArray[2],hIArray[3],hIArray[4],hIArray[5],hIArray[6],hIArray[7],hIArray[8],hIArray[9],hIArray[10],hIArray[11],
+'"' + khAll.querySelector('.txtr_kantaiCaution').value + '"',
+'"' + khAll.querySelector('.txtr_kantaitokkou').value + '"'
+]
+);
+
+}
+const transpose = a => a[0].map((_, c) => a.map(r => r[c]));
+        
+for (let csvRow of transpose(csvData)){
+makeCsvStr += csvRow.join() + '\n';
+}
+return makeCsvStr;    
+}
+            
+//デッキビルダー形式のテキストをクリップボードにコピー
+function copyDeckText(){
+let kIArray = event.target.closest('.kantaiHenseiAll').getElementsByClassName('henseiItem');
+let returnText ='{"version":4,"f1":{';
+let f2text = '},"f2":{';
+let i = 1;
+
+if (kIArray.length === 7){
+returnText ='{"version":4,"f1":{},"f2":{},"f3":{';
+}
+        
+
+for (let kI of kIArray){
+
+if (kI.getAttribute('data-shipid') !== "0"){
+returnText += '"s' + i + '":{"id":"' + kI.getAttribute('data-shipid') +'","lv":' + kI.getAttribute('data-shiplv') + ',"luck":-1,"items":{}},';
+}
+        
+if (kIArray.length === 12 && i === 6){
+i-=6;
+returnText += f2text;
+f2text='';
+}
+        
+i++;     
+}
+returnText += '}}';
+
+returnText = returnText.replace(/,}/g, '}');
+event.target.value =returnText;     
+}
+  
+//cssへの敗北
+      function adjustLayout(){
+       let sArray = document.getElementsByClassName('sheetcontents');
+       let kArray = document.getElementsByClassName('kantaiList');
+       let kRect;
+       let sRect;
+       let clHeight =window.innerHeight-8;
+
+              
+              if (sArray.length !== 0){
+       for (let k of kArray){
+　　　　　　kRect = k.getBoundingClientRect();
+   // k.height=clHeight-kRect.top-200;
+               k.style.height = clHeight-kRect.top;
+       }
+       for (let s of sArray){
+        　　sRect = s.getBoundingClientRect(); 
+                  s.style.height=clHeight-sRect.top ;
+       }            
+        }
+
+              
       }
             
       //新規シートのタブを作成して選択する
@@ -1730,12 +1880,11 @@ e5 = document.createElement("textarea");　
         e1.type = "radio";
         e1.name = "sheet_name";
 
-//ここから追記
-e1.classList.add('defaultHideRadios');
-//ここまで
+        e1.classList.add('defaultHideRadios');
         e1.id = makeNewId('sheet', 1)[0];
         let e2 = document.createElement("label");
         e2.classList.add("sheet_tab");
+        e2.setAttribute('onclick','adjustLayout()')
         e2.setAttribute('for', makeNewId('sheet', 1)[0]);
         e2.draggable = true;
         e2.setAttribute('ondragstart', 'sheetDragStart()');
@@ -1885,14 +2034,18 @@ e1.classList.add('defaultHideRadios');
       function henseiItemDragOver() {
         event.preventDefault();
         //同一編成内での順序入れ替え
-        if (dragObj.classList.contains('henseiItem') && dragObj.parentNode === event.currentTarget.parentNode){
+        if (dragObj.classList.contains('henseiItem') && dragObj.parentNode === event.currentTarget.parentNode ){
+                
         let r = event.currentTarget.getBoundingClientRect();
+        let dr = dragObj.getBoundingClientRect();
+        if (r.left === dr.left){
         if ((event.clientY - r.top) < (event.currentTarget.clientHeight / 2)) {
           event.currentTarget.style.borderBottom = '';
           event.currentTarget.style.borderTop = '2px solid blue';
         } else {
           event.currentTarget.style.borderBottom = '2px solid blue';
           event.currentTarget.style.borderTop = '';
+        }
         }
         }
       }
@@ -1910,8 +2063,10 @@ e1.classList.add('defaultHideRadios');
 //event.currentTarget !== dragObj &&
         if ( dragObj.classList.contains('henseiItem')) {
           //同一編成内での順序入れ替え
+          let r = event.currentTarget.getBoundingClientRect();
+
           if (dragObj.parentNode === event.currentTarget.parentNode){
-            let r = event.currentTarget.getBoundingClientRect();
+
             if ((event.clientY - r.top) < (event.currentTarget.clientHeight / 2)) {
               //同型艦編成の確認が必要
               event.currentTarget.parentNode.insertBefore(dragObj, event.currentTarget);
@@ -2257,47 +2412,71 @@ e1.classList.add('defaultHideRadios');
   <body>
 
     <div class = "information">
-      <details open>
-        <summary>ツール1</summary>
-          このツールを用いることで発生したいかなる問題についても責任を負いかねますので、それに同意できる方のみご利用ください。<br>
-          当ツールで用いられている画像は著作権法に基づき引用しております。権利者様からの画像等の削除の依頼等には速やかに対処いたします。<br>
+      <details open ontoggle = 'adjustLayout()'>
+        <summary>このサイトについて</summary>
+          このサイトを用いることで発生したいかなる問題についても責任を負いかねますので、それに同意できる方のみご利用ください。<br>
+          当サイトで用いられている画像は著作権法に基づき引用しております。権利者様からの画像等の削除の依頼等には速やかに対処いたします。<br>
           twitter：@waiwaiworld573
-            <details>
+            <details ontoggle = 'adjustLayout()'>
               <summary>使い方</summary>
-                七四式だと簡単に取得できます。<br>
+            <details open ontoggle = 'adjustLayout()'>
+              <summary>初期設定</summary>
+<div>
+                １．シートの作成<br>
+                　　ツール行の下の「＋」をクリック<br>
+                ２．札のテキストと色の設定<br>
+　　「出撃札編集」をクリックで編集ダイアログを開き、終わったら「設定」をクリック<br>
+                ３．艦隊情報の入力<br>
+　　「艦隊情報入力」をクリックで入力ダイアログを開く。<br>
+　　艦隊の置き換えを選択。テキストエリアに艦隊分析形式の艦隊データテキストを入力し、「艦隊を設定」をクリック<br>
+　　艦隊分析形式の艦隊データテキストの取得方法については各自で調べて下さい<br>                  
+　　七四式だと編成情報右クリックで簡単に取得できます<br>
+</div>
+<img src="説明.png" >
+             </details>                   
+            <details open ontoggle = 'adjustLayout()'>
+              <summary>基本操作</summary>
+<div>
+                編成セットを必要分追加し、出撃札と編成部隊の種類(通常、連合等)を選択<br>
+                艦娘をドラッグ＆ドロップで編成に追加すると札情報が追加されます<br>
+並べ替えや編成解除もドラッグ＆ドロップで対応<br>
+上部ツール欄でページの保存、編成のCSV出力、表示形式の切り替えが可能
+        
+</div>
+<img src="説明2.png" >
+             </details>                   
 
-                ドラッグアンドドロップで編成できます。
-                札がすでについた艦娘を別の出撃札の編成に入れようとしても弾く仕様にしています
-                同名艦は編成できるようにしていますが、編成の背景色が変化して警告する仕様です    
+            
             </details>
               
-            <details>
+            <details ontoggle = 'adjustLayout()'>
               <summary>更新履歴</summary>
-                とりあえず動いているver<br>
+                とりあえずそれっぽく動いたものを公開<br>
             </details>
-            <details>
-              <summary>やりたいこと</summary>
-              ・リファクタリング<br>
-              ・css改善<br>
-        　　　・シートのデータを公開可能な共有リンクの生成機能の実装<br>
-              ・編成済みの艦隊を別の艦隊に置き換えて可能な限り編成する機能の実装<br>
-              ・htmlの生成をテンプレートファイルから読み込む形にする<br>
-              ・テキストボックス上ではドラッグできるようにする<br>
+            <details ontoggle = 'adjustLayout()'>
+              <summary>残課題メモ</summary>
+・シートのデータを公開可能な共有リンクの生成機能の実装(firebase?)<br>
+              ・艦隊が札ソートの時に編成変更に伴いソートしなおす<br>
+              ・編成をデッキビルダー形式でクリップボードにコピー<br>
+              ・編成済み艦娘同士の入れ替え(編成艦娘から編成艦娘へD&D)<br>
+              ・編成済み艦娘の別艦娘への置き換え(編成艦娘から艦隊艦娘へD&D)<br>
+・htmlの生成をテンプレートファイルから読み込む形に<br>
+・マウスオーバー時のカーソルの変更<br>
+              ・大規模なリファクタリング<br>
+              ・抜本的なcssの修正<br>
+              ・google analyticsの導入<br>
             </details>
       </details>
     </div>
     <div class = "tools">
-      <details>
-        <summary>ツール2</summary>
-              <label>艦隊と編成の状態を保存</label>
-              <input type = 'button' value = 'セーブ' onclick = 'MakeAllSaveData();'>
-              <label>表示形式の選択</label>
+              <label>　ツール　</label>
+              <input type = 'button' value = 'セーブ' onclick = 'MakeAllSaveData();'>(オート化？)
+              <input type = 'button' value = 'シートをcsvで出力' onclick = 'saveCsvFile();'>
               <select onchange = "changeStyleSheet();">
-                <option>通常</option>
-                <option>省スペース</option>
+                <option>表示形式：通常</option>
+                <option>表示形式：省スペース</option>
               </select>
-              アクティブシートの共有URLを生成できるといいな
-      </details>
+              アクティブシートの共有URLを生成？(firebase導入？)
     </div>
     <div class = "maincontents">
       <div class = "sheetselection">

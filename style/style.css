@@ -17,7 +17,15 @@
   flex-flow: column;
   height:1fr;
 }
+.henseiName{
+  resize:none;
+}
+.btn_deckbuilder{
+  height:auto;
+  width:100%;
 
+  
+}
 .sheetselection{
   flex-wrap: wrap;
   display: flex;
@@ -26,13 +34,16 @@
 
 .area {
   width:300px;
+  
   flex-wrap: wrap;
   display: flex;
   background-color: white;
 /*   flex-grow: 1; */
 /*   height:calc(100% - 90px); */
 }
-
+textarea{
+  width:100%;
+}
 .sheet_tab {
   width:auto;
   height:22pt;
@@ -100,7 +111,9 @@ input:checked + .tab_class {
 input:checked + .tab_class + .kantaiList {
   display: block;
   padding:0em;
-  height:calc(100vh - 200pt);
+/*   height:calc(100vh - 200pt); */
+/*   height: */
+  
   overflow-y:scroll;
   margin-top:2pt;
   margin-bottom:2pt;
@@ -138,6 +151,8 @@ input:checked + .tab_class + .kantaiList {
   color: white;
   margin: 2px;
 /*   padding:2px; */
+    margin-left:auto;
+  margin-right:auto;
   float:none;
   line-height:16px;
   width: 133px;
