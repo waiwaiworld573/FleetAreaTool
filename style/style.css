@@ -1,54 +1,57 @@
-
-.information{
-  width:100%;
-  background-color:#ffddff;
+.information {
+  width: 100%;
+  background-color: whitesmoke;
 }
 
-.tools{
-  width:100%;
-  background-color:#ddffff;
+.tools {
+  width: 100%;
+  background-color: #ddffff;
 }
 
-.maincontents{
-  width:100%;
-  background-color:#ffffdd;
+.maincontents {
+  width: 100%;
+  background-color: #whitesmoke;
   flex-wrap: wrap;
   display: flex;
   flex-flow: column;
-  height:1fr;
+  height: 1fr;
 }
-.henseiName{
-  resize:none;
+
+.henseiName {
+  resize: none;
 }
-.btn_deckbuilder{
+
+.btn_deckbuilder {
   height:auto;
   width:100%;
-
-  
 }
-.sheetselection{
+
+.kantaiHenseiAll>select {
+  width: 78px;
+}
+
+.sheetselection {
   flex-wrap: wrap;
   display: flex;
-  height:30pt;
+  height: 30pt;
 }
 
 .area {
-  width:300px;
-  
+  width: 300px;
   flex-wrap: wrap;
   display: flex;
   background-color: white;
-/*   flex-grow: 1; */
-/*   height:calc(100% - 90px); */
 }
-textarea{
-  width:100%;
+
+textarea {
+  width: 100%;
 }
+
 .sheet_tab {
-  width:auto;
-  height:22pt;
-  margin-right:3pt;
-  background-color: rgb(197,194,185);
+  width: auto;
+  height: 22pt;
+  margin-right: 3pt;
+  background-color: rgb(197, 194, 185);
   line-height: 30px;
   font-size: 16px;
   text-align: left;
@@ -57,32 +60,31 @@ textarea{
   order: -1;
 }
 
-.sheetcontents{
-  display:none;
-  width:100%;
-  height:calc(100vh - 100pt);
-/*   flex-grow: 1; */
+.sheetcontents {
+  display: none;
+  width: 100%;
 }
-
 
 input[name="sheet_name"] {
-  display:none;
-  height:auto;
+  display: none;
+  height: auto;
 }
 
-input:checked + .sheet_tab {
-  background-color: rgb(119,188,179);
+input:checked+.sheet_tab {
+  background-color: rgb(119, 188, 179);
   color: white;
 }
 
-input:checked + .sheet_tab + .sheetcontents {
+input:checked+.sheet_tab+.sheetcontents {
   display: flex;
+  min-height:790px;
+/*   max-height:840px; */
 }
 
 .tab_class {
-  width:25%;
-  height:30px;
-  background-color: rgb(197,194,185);
+  width: 25%;
+  height: 30px;
+  background-color: rgb(197, 194, 185);
   line-height: 30px;
   font-size: 16px;
   text-align: center;
@@ -92,56 +94,54 @@ input:checked + .sheet_tab + .sheetcontents {
 }
 
 .defaultHideRadios {
-  display:none;
-  position:fixed;
+  display: none;
+  position: fixed;
 }
-
-
 
 input[type="color"] {
-  width:16pt;
-  height:16pt;
+  width: 16pt;
+  height: 16pt;
 }
 
-input:checked + .tab_class {
-  background-color: rgb(119,188,179);
+input:checked+.tab_class {
+  background-color: rgb(119, 188, 179);
   color: white;
 }
 
-input:checked + .tab_class + .kantaiList {
+input:checked+.tab_class+.kantaiList {
   display: block;
-  padding:0em;
-/*   height:calc(100vh - 200pt); */
-/*   height: */
-  
-  overflow-y:scroll;
-  margin-top:2pt;
-  margin-bottom:2pt;
+  padding: 0em;
+  min-height: 468px;
+/*   height:calc(100vh - 340px); */
+    min-height:660px;
+  overflow-y: scroll;
+  margin-top: 2pt;
+  margin-bottom: 2pt;
 }
 
 .kantaiHensei {
-  display:block;
+  display: block;
   float: none;
   width: auto;
-  position:relative;
-  height:100%;
-/*   margin:1em auto; */
-  padding:3pt;
+  position: relative;
+  height: 100%;
+  padding: 3pt;
+  margin-top:1px;
+  margin-bottom:1px;
 
 }
 
 .kantaiItem {
-/*   border-radius: 3px; */
   list-style: none;
   background-color: gray;
   color: white;
   margin: 2px;
   float: left;
-  line-height:1em;
-  padding:2px;
+  line-height: 1em;
+  padding: 2px;
   width: calc(50% - 8px);
-  height:auto;
-  position:relative;
+  height: auto;
+  position: relative;
 }
 
 .henseiItem {
@@ -150,54 +150,48 @@ input:checked + .tab_class + .kantaiList {
   background-color: gray;
   color: white;
   margin: 2px;
-/*   padding:2px; */
-    margin-left:auto;
-  margin-right:auto;
-  float:none;
-  line-height:16px;
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+  line-height: 16px;
   width: 133px;
-  height:75px;
-  position:relative;  
-border: 2px solid;
+  height: 75px;
+  position: relative;
+  border: 2px solid;
 }
 
 .kantaiList {
-  display:none;
+  display: none;
 }
 
-.kantaiJouhou{
- width:10px;
+.kantaiJouhou {
+  width: 10px;
 }
 
-
-.shipimg{
-  width:100%;
-  draggable:false;
-
-  
+.shipimg {
+  width: 100%;
+  draggable: false;
 }
 
-.shiplv{
+.shiplv {
   float: left;
-  font-size:0.9rem
+  font-size: 0.9rem
 }
 
-.shiparea{
+.shiparea {
   text-align: right;
-  float:right;
+  float: right;
   margin-right: 0.2em;
 }
 
-.shipname{
+.shipname {
   white-space: nowrap;
   overflow: hidden;
-  padding:0.2em 0em;
-
-  
+  padding: 0.2em 0em;
 }
 
-.kantaiHenseiAll{
-  vertical-align:top;
+.kantaiHenseiAll {
+  vertical-align: top;
 }
 
 .henseiText {
@@ -205,69 +199,63 @@ border: 2px solid;
   left: 2;
 }
 
-.henseiName{
-  width:100%;
-}
-.closeButton{
-  float:right;
-  font-size:1em;
-  padding:0em;
-  border:none;
-  background:rgba(0,0,0,0);
-}
-.btn_addHensei{
-font-size:0.5em;
-  vertical-align:top;
-  float:right;
-  margin-right:1em;
+.henseiName {
+  width: 100%;
 }
 
-.sheet_name_label{
-  width:auto;
-  border:none;
-  background:rgba(0,0,0,0);
-  margin:4pt
+.closeButton {
+  float: right;
+  font-size: 1em;
+  padding: 0em;
+  border: none;
+  background: rgba(0, 0, 0, 0);
 }
 
-
-
-.splitLeft{
-  display:block;
-  //display:flex;
-  background-color:skyblue;
-//    height:calc(100vh - 50pt);
-  //height:auto;
-  width:auto;
+.btn_addHensei {
+  font-size: 0.5em;
+  vertical-align: top;
+  float: right;
+  margin-right: 1em;
 }
 
-.splitRight{
-  overflow-x:scroll;
-  overflow-y:scroll;
-  background-color:pink;
-//  height:calc(100vh - 50pt);
+.sheet_name_label {
+  width: auto;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  margin: 4pt
+}
+
+.splitLeft {
+  display: block;
+  background-color: whitesmoke;
+  width: 300px;
+}
+
+.splitRight {
+  overflow-x: scroll;
+  overflow-y: scroll;
+  background-color: #ddffff;
   flex-grow: 1;
 }
 
-.lst_fudaList{
-  width:auto;
-
+.lst_fudaList {
+  width: auto;
 }
 
-.lst_ListSort{
-  width:auto;
-  float:right;
+.lst_ListSort {
+  width: auto;
+  float: right;
 }
 
-.txt_fudaText{
-  width:100px;
-
+.txt_fudaText {
+  width: 100px;
 }
 
 .kantaiList {
-  display:none;
+  display: none;
 }
 
-td{
-  border:solid;
-  background-color:#EEFFFF;
+td {
+  border: solid;
+  background-color:whitesmoke;
 }
