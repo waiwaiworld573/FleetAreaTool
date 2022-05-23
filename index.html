@@ -808,7 +808,6 @@
           default:
             SelectListTab = "tab_hojo";
           }
-              console.log(SelectListTab);
           //艦娘のリスト要素を作成
           shipInfoText = makeNewShip(shipDataID, shipData, `${match[2]}`);
           shipInfoText.setAttribute('ondragstart', 'henseiDragStart()');
@@ -1643,6 +1642,16 @@
         hI.getElementsByClassName('shiplv')[0].style.backgroundColor = "";
         hI.getElementsByClassName('shiparea')[0].innerHTML = '';
       }
+
+
+      //艦隊ソートが札の場合にソートしなおす
+      function resortbyfuda(){
+        let kanSel = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked')[0].nextElementSibling.nextElementSibling.getElementsByClassName('lst_ListSort')[0];
+        if (kanSel.selectedIndex === 4 || kanSel.selectedIndex === 5){
+          kanSel.addEventListener('onchange', ListSort);　
+          kanSel.dispatchEvent(new Event('onchange'));
+        }
+      }
       //保存
       async function saveCsvFile() {
         let opts = {
@@ -2011,6 +2020,8 @@
               event.currentTarget.parentNode.getElementsByClassName(fShip)[0].getElementsByClassName('shiparea')[0].style.backgroundColor = fShipArray[0].getElementsByClassName('shiparea')[0].style.backgroundColor;
             }
           }
+          //札ソートの場合ソートしなおす
+          resortbyfuda();
         }
         //編成セットをドロップしたとき
         if (dragObj.classList.contains('kantaiHenseiAll')) {
@@ -2193,6 +2204,8 @@
         toItem.parentNode.insertBefore(fromItem.cloneNode(true), toItem.nextSibling);
         toItem.remove();
         fromItem.remove();
+        //札ソートの場合ソートしなおす
+        resortbyfuda();
       }
       //艦隊艦娘の編成へのセットをトライ
       function trySetHenseiItem(fromItem, toItem) {
@@ -2218,6 +2231,8 @@
           toItem.parentNode.insertBefore(addItem, toItem);
           toItem.remove();
           checkHenseiAndTokkou(addItem); //編成と特効状態のチェック
+          //札ソートの場合ソートしなおす
+          resortbyfuda();
         }
       }
       //該当の編成艦娘を消す場合の艦隊艦娘の処理を実行
@@ -2563,7 +2578,6 @@
 <div style ="font-size:0.8em;">
 ・シートのデータを公開可能な共有リンク生成(firebase？)<br>
 ・セーブはオート化？<br>
-・艦隊が札ソートの時に編成変更に伴いソートしなおす<br>
 ・ページエレメントの生成はテンプレートファイルから読み込み？<br>
 ・マウスオーバー時のカーソルの変更<br>
 ・マウスオーバー時の艦娘情報の充実化<br>
