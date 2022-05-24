@@ -2,14 +2,12 @@
   <head>
     <meta charset="utf-8">
     <link id="cssLink" rel="stylesheet" href="style/style.css">
-
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WS0H7X957G"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-WS0H7X957G');
 </script>
 
@@ -1157,6 +1155,11 @@
         case 1:
           document.getElementById("cssLink").href = "style/smallstyle.css";
         }
+            setTimeout(waitStyleChange, 200);
+      }
+      //css読み込み遅延の応急処置
+      const waitStyleChange =function(){
+        adjustLayout();
       }
       //札を更新
       function setfudaselectbox() {
@@ -1750,13 +1753,17 @@
       function adjustLayout() {
         let lRect;
         let sRect;
+        let heightMemo;
         let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
         if (selectedSheets.length !==0){
           let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
           let resizeList = resizeSheet.getElementsByClassName('area')[0].querySelector('input[type="radio"]:checked').nextElementSibling.nextElementSibling;
           lRect = resizeList.getBoundingClientRect();
+          heightMemo=lRect.height;
           sRect = resizeSheet.querySelector('.kantaiHenseiAll').getBoundingClientRect();
           resizeList.style.height = sRect.height + sRect.top - lRect.top;
+          lRect = resizeList.getBoundingClientRect();
+          return heightMemo !== lRect.height;
         }
       }
       //新規シートのタブを作成して選択する
