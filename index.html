@@ -728,7 +728,7 @@
       window.onload = function () {
         preLoadImg(); // 画像プリロード
         loadData(); //セーブデータのロード
-        adjustLayout(); //画面レイアウトの調整
+        adjustLayout(); //画面レイアウトの調整　
       }
       //セーブデータのロード
       function loadData() {
@@ -748,10 +748,6 @@
           img.src = 'img/' + DataTable[i][0] + '.png';
         }
       }
-      //ウインドウサイズ変更時に実行(cssへの敗北)
-      window.onresize = function () {
-         adjustLayout();
-      };
       //艦隊情報読み込み
       function inputKanmusuData() {
         //テキストボックスの文字列を取得
@@ -1515,24 +1511,29 @@
         e5.classList.add('kantaiHensei');　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
+        e5.setAttribute('ontoggle','adjustLayout();');
         e6 = document.createElement("summary");
         e6.append(document.createTextNode("編成条件"));　
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
+        e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_kantaiCaution");
         e6.setAttribute('oninput', 'ChangeHenseiList();');
         e5.appendChild(e6.cloneNode(true));　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
+        e5.setAttribute('ontoggle' , 'adjustLayout();');
         e6 = document.createElement("summary");
         e6.append(document.createTextNode("特効情報"));　
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
+        e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_kantaitokkou");
         e6.setAttribute('oninput', 'ChangeTokkouList();');
         e5.appendChild(e6.cloneNode(true));　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
+        e5.setAttribute('ontoggle' , 'adjustLayout();');
         e6 = document.createElement("summary");
         e6.append(document.createTextNode("外部連携"));　
         e5.appendChild(e6.cloneNode(true));
@@ -1540,6 +1541,7 @@
         e6.innerHTML = "デッキビルダー形式";
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
+        e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_deckbuilder");
         e6.setAttribute('onfocus', "copyDeckText();this.select();");
         e5.appendChild(e6.cloneNode(true));
@@ -1746,27 +1748,16 @@
       }
       //cssへの敗北
       function adjustLayout() {
-        let wsY = window.scrollY;
-        //スクロールする
-        window.scroll(0, document.documentElement.offsetHeight);
         let lRect;
         let sRect;
-        let clHeight = window.innerHeight-8;
         let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
         if (selectedSheets.length !==0){
           let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
           let resizeList = resizeSheet.getElementsByClassName('area')[0].querySelector('input[type="radio"]:checked').nextElementSibling.nextElementSibling;
           lRect = resizeList.getBoundingClientRect();
-          sRect = resizeSheet.getBoundingClientRect();
-          if (clHeight - sRect.top > 0){
-            resizeSheet.style.height = clHeight - sRect.top;
-          }
-          if (clHeight - lRect.top > 0){
-            resizeList.style.height = clHeight - lRect.top;
-          }
+          sRect = resizeSheet.querySelector('.kantaiHenseiAll').getBoundingClientRect();
+          resizeList.style.height = sRect.height + sRect.top - lRect.top;
         }
-        //スクロールを戻す
-        window.scroll(0, wsY);
       }
       //新規シートのタブを作成して選択する
       function MakeSheetTab(sheetName) {
@@ -2500,16 +2491,18 @@
           alert('編成が作れなくなるので消しません');
         }
       }
+
+          
     </script>
   </head>
   <body>
 
     <div class = "information">
-      <details open ontoggle = 'adjustLayout()'>
+      <details open >
         <summary>このサイトについて</summary>
-            <details style="padding-left:1em;" ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" >
             <summary>使い方</summary>
-            <details style="padding-left:1em;" open ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" open >
               <summary>初期設定</summary>
 <div style ="font-size:0.9em;">
                 １．シートの作成<br>
@@ -2524,7 +2517,7 @@
 </div>
 <img src="desc/図1.png" ><br>
              </details>                   
-            <details style="padding-left:1em;" open ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" open >
               <summary>基本操作</summary>
 <div style ="font-size:0.9em;">
                 編成セットを必要分追加し、出撃札と編成部隊の種類(通常、連合等)を選択<br>
@@ -2536,11 +2529,11 @@
 <img src="desc/図2.png" ><br>
       </div>
              </details>                   
-            <details style="padding-left:1em;" open ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" open >
               <summary>その他機能</summary>
 <div style ="font-size:0.9em;">
 
-            <details style="padding-left:1em;" open ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" open >
               <summary style ="font-size:1.11em;">編成単位の機能</summary>
 <div>
 各編成で個別に割り当てられた機能について<br>
@@ -2552,7 +2545,7 @@
 </div>
              </details>      
 
-                  <details style="padding-left:1em;" open ontoggle = 'adjustLayout()'>
+                  <details style="padding-left:1em;" open >
               <summary style ="font-size:1.11em;">別シートの艦隊によるシート内編成の再現</summary>
 <div>
 シート内の全編成を別のシートの艦隊を用い(札の状態も考慮する)可能な限り再現した新規シートを作成する<br>
@@ -2569,11 +2562,11 @@
             
             </details>
               
-            <details style="padding-left:1em;" ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" >
               <summary>更新履歴</summary>
                 <div style ="font-size:0.9em;">2022/05/24 とりあえずだいたいそれっぽく動いたものを公開<br></div>
             </details>
-            <details style="padding-left:1em;" ontoggle = 'adjustLayout()'>
+            <details style="padding-left:1em;" >
               <summary>メモ</summary>
 <div style ="font-size:0.9em;">
 ・シートのデータを公開可能な共有リンク生成(firebase？)<br>

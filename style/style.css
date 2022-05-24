@@ -78,7 +78,6 @@ input:checked+.sheet_tab {
 input:checked+.sheet_tab+.sheetcontents {
   display: flex;
   min-height:790px;
-/*   max-height:840px; */
 }
 
 .tab_class {
@@ -111,9 +110,8 @@ input:checked+.tab_class {
 input:checked+.tab_class+.kantaiList {
   display: block;
   padding: 0em;
-  min-height: 468px;
-/*   height:calc(100vh - 340px); */
-    min-height:660px;
+/*   min-height:660px; */
+/*   height:660px; */
   overflow-y: scroll;
   margin-top: 2pt;
   margin-bottom: 2pt;
