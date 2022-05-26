@@ -24,7 +24,7 @@
 }
 .maincontents{
   width:100%;
-  background-color:whitesmoke;
+/*   background-color:whitesmoke; */
   flex-wrap: wrap;
   display: flex;
   flex-flow: column;
