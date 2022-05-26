@@ -234,7 +234,7 @@ input:checked+.tab_class {
 
 .splitRight {
   overflow-x: scroll;
-  overflow-y: scroll;
+  overflow-y: auto;
   background-color: #ddffff;
 /*   flex-grow: 1; */
   height:auto;

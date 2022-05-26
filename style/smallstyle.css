@@ -268,7 +268,8 @@ font-size:0.5em;
 }
 
 .splitRight{
-  overflow-y:scroll;
+  overflow-y:auto;
+  overflow-x: scroll;
   background-color:#ddffff;
 /*   flex-grow: 1; */
   height:auto;
