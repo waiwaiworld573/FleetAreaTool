@@ -726,7 +726,6 @@
       window.onload = function () {
         preLoadImg(); // 画像プリロード
         loadData(); //セーブデータのロード
-        adjustLayout(); //画面レイアウトの調整　
       }
       //セーブデータのロード
       function loadData() {
@@ -917,7 +916,7 @@
         let sName = "新規シート";
         let kantaiStr = "";
         MakeSheet(sName, newfudaInfoArray(), 0, kantaiStr, 0, [newhenseiArray()]);
-        adjustLayout();
+        // adjustLayout();
       }
       //hexをcolorに変換
       function HexToClr(HexData) {
@@ -1155,12 +1154,12 @@
         case 1:
           document.getElementById("cssLink").href = "style/smallstyle.css";
         }
-            setTimeout(waitStyleChange, 200);
+            // setTimeout(waitStyleChange, 200);
       }
       //css読み込み遅延の応急処置
-      const waitStyleChange =function(){
-        adjustLayout();
-      }
+      // const waitStyleChange =function(){
+      //   adjustLayout();
+      // }
       //札を更新
       function setfudaselectbox() {
         let a = event.target.closest('.sheetcontents').getElementsByClassName('lst_fudaList')[0].getElementsByTagName('option');
@@ -1366,14 +1365,7 @@
         e2.setAttribute('onclick', 'showKantaiSettingDialog()');
         e2.setAttribute('value', '艦隊情報入力');
         e1.appendChild(e2.cloneNode(true));
-        //<br>
-        //        e1.appendChild(document.createElement('br'));
-        //        //ラベル：札名編集
-        //        e2 = document.createElement("label");
-        //        e2.append(document.createTextNode('艦隊分析ページ形式のデータ読み込み'));
-        //        e1.appendChild(e2.cloneNode(true));
-        //        //<br>
-        //        e1.appendChild(document.createElement('br'));
+
         //艦隊入力テキスト
         e2 = document.createElement("input");
         e2.classList.add('kantaiJouhou');
@@ -1415,7 +1407,7 @@
           //ここまで
           e3.setAttribute('name', sc.previousElementSibling.getAttribute('for') + '_kanshu');
           e3.id = idNames[i];　
-          e3.setAttribute('onclick', 'adjustLayout()')
+          // e3.setAttribute('onclick', 'adjustLayout()')
           e3.checked = (i === 0);
           f.append(e3.cloneNode(true));
           //label class = "tab_class"～
@@ -1514,29 +1506,29 @@
         e5.classList.add('kantaiHensei');　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
-        e5.setAttribute('ontoggle','adjustLayout();');
+        // e5.setAttribute('ontoggle','adjustLayout();');
         e6 = document.createElement("summary");
         e6.append(document.createTextNode("編成条件"));　
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
-        e6.setAttribute('onmouseup' , 'adjustLayout();');
+        // e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_kantaiCaution");
         e6.setAttribute('oninput', 'ChangeHenseiList();');
         e5.appendChild(e6.cloneNode(true));　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
-        e5.setAttribute('ontoggle' , 'adjustLayout();');
+        // e5.setAttribute('ontoggle' , 'adjustLayout();');
         e6 = document.createElement("summary");
         e6.append(document.createTextNode("特効情報"));　
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
-        e6.setAttribute('onmouseup' , 'adjustLayout();');
+        // e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_kantaitokkou");
         e6.setAttribute('oninput', 'ChangeTokkouList();');
         e5.appendChild(e6.cloneNode(true));　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
-        e5.setAttribute('ontoggle' , 'adjustLayout();');
+        // e5.setAttribute('ontoggle' , 'adjustLayout();');
         e6 = document.createElement("summary");
         e6.append(document.createTextNode("外部連携"));　
         e5.appendChild(e6.cloneNode(true));
@@ -1544,7 +1536,7 @@
         e6.innerHTML = "デッキビルダー形式";
         e5.appendChild(e6.cloneNode(true));
         e6 = document.createElement("textarea");
-        e6.setAttribute('onmouseup' , 'adjustLayout();');
+        // e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_deckbuilder");
         e6.setAttribute('onfocus', "copyDeckText();this.select();");
         e5.appendChild(e6.cloneNode(true));
@@ -1589,6 +1581,14 @@
           a[i].getElementsByClassName('txtr_kantaitokkou')[0].value = henseiArray[i][5];
           checkHenseiAndTokkou(a[i]);
         }
+        //splitRightのサイズ変更イベントを追加
+        const resizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) { 
+          entry.target.closest('.sheetcontents').querySelector('.area').style.height = entry.target.children[0].getBoundingClientRect().height -120; 
+        }
+        });
+        resizeObserver.observe(sc.querySelector('.splitRight'));
+            
       }
       //配列から指定したセレクトボックスの文字列と色を決定
       //セレクトダウンリストの中身を編集
@@ -1749,22 +1749,29 @@
         returnText = returnText.replace(/,}/g, '}');
         event.target.value = returnText;
       }
+
+          
       //cssへの敗北
       function adjustLayout() {
-        let lRect;
-        let sRect;
-        let heightMemo;
-        let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
-        if (selectedSheets.length !==0){
-          let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
-          let resizeList = resizeSheet.getElementsByClassName('area')[0].querySelector('input[type="radio"]:checked').nextElementSibling.nextElementSibling;
-          lRect = resizeList.getBoundingClientRect();
-          heightMemo=lRect.height;
-          sRect = resizeSheet.querySelector('.kantaiHenseiAll').getBoundingClientRect();
-          resizeList.style.height = sRect.height + sRect.top - lRect.top;
-          lRect = resizeList.getBoundingClientRect();
-          return heightMemo !== lRect.height;
-        }
+        // let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
+        // if (selectedSheets.length !==0){
+        //    let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
+        //    resizeSheet.querySelector('.area').style.height = resizeSheet.querySelector('.splitRight').style.height ;
+        // }
+        // let lRect;
+        // let sRect;
+        // let heightMemo;
+        // let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
+        // if (selectedSheets.length !==0){
+        //   let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
+        //   let resizeList = resizeSheet.getElementsByClassName('area')[0].querySelector('input[type="radio"]:checked').nextElementSibling.nextElementSibling;
+        //   lRect = resizeList.getBoundingClientRect();
+        //   heightMemo=lRect.height;
+        //   sRect = resizeSheet.querySelector('.kantaiHenseiAll').getBoundingClientRect();
+        //   resizeList.style.height = sRect.height + sRect.top - lRect.top;
+        //   lRect = resizeList.getBoundingClientRect();
+        //   return heightMemo !== lRect.height;
+        // }
       }
       //新規シートのタブを作成して選択する
       function MakeSheetTab(sheetName) {
@@ -1776,7 +1783,7 @@
         e1.id = makeNewId('sheet', 1)[0];
         let e2 = document.createElement("label");
         e2.classList.add("sheet_tab");
-        e2.setAttribute('onclick', 'adjustLayout()')
+        // e2.setAttribute('onclick', 'adjustLayout()')
         e2.setAttribute('for', makeNewId('sheet', 1)[0]);
         e2.draggable = true;
         e2.setAttribute('ondragstart', 'sheetDragStart()');

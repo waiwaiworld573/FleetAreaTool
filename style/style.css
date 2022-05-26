@@ -1,20 +1,20 @@
 .information {
-  width: 100%;
-  background-color: whitesmoke;
+width: 100%;
+background-color: whitesmoke;
 }
 
 .tools {
-  width: 100%;
-  background-color: #ddffff;
+width: 100%;
+background-color: #ddffff;
 }
 
 .maincontents {
-  width: 100%;
-  background-color: #whitesmoke;
-  flex-wrap: wrap;
-  display: flex;
-  flex-flow: column;
-  height: 1fr;
+width: 100%;
+background-color: #whitesmoke;
+flex-wrap: wrap;
+display: flex;
+flex-flow: column;
+height:auto;
 }
 
 .henseiName {
@@ -33,16 +33,25 @@
 .sheetselection {
   flex-wrap: wrap;
   display: flex;
-  height: 30pt;
+  height:30pt;
 }
 
 .area {
   width: 300px;
   flex-wrap: wrap;
   display: flex;
-  background-color: white;
+  background-color: whitesmoke;
+  vertical-align: top;
 }
 
+input:checked+.tab_class+.kantaiList {
+  display: block;
+  padding: 0em;
+  overflow-y: auto;
+  margin-top: 2pt;
+  margin-bottom: 2pt;
+  height:calc(100%);  
+}
 textarea {
   width: 100%;
 }
@@ -63,6 +72,7 @@ textarea {
 .sheetcontents {
   display: none;
   width: 100%;
+
 }
 
 input[name="sheet_name"] {
@@ -77,7 +87,7 @@ input:checked+.sheet_tab {
 
 input:checked+.sheet_tab+.sheetcontents {
   display: flex;
-  min-height:790px;
+    height:auto;
 }
 
 .tab_class {
@@ -107,15 +117,7 @@ input:checked+.tab_class {
   color: white;
 }
 
-input:checked+.tab_class+.kantaiList {
-  display: block;
-  padding: 0em;
-/*   min-height:660px; */
-/*   height:660px; */
-  overflow-y: scroll;
-  margin-top: 2pt;
-  margin-bottom: 2pt;
-}
+
 
 .kantaiHensei {
   display: block;
@@ -227,13 +229,15 @@ input:checked+.tab_class+.kantaiList {
   display: block;
   background-color: whitesmoke;
   width: 300px;
+  height:auto;
 }
 
 .splitRight {
   overflow-x: scroll;
   overflow-y: scroll;
   background-color: #ddffff;
-  flex-grow: 1;
+/*   flex-grow: 1; */
+  height:auto;
 }
 
 .lst_fudaList {
