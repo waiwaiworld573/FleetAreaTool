@@ -726,6 +726,9 @@
       window.onload = function () {
         preLoadImg(); // 画像プリロード
         loadData(); //セーブデータのロード
+      　if (location.search != ''){
+             alert(location.search);
+       }
       }
       //セーブデータのロード
       function loadData() {
