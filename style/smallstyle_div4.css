@@ -7,36 +7,40 @@ dialog {
   z-index: 2;
 }
 
+.kantaiHenseiAll textarea {
+  font-size: 0.7em;
+}
+
 .tools {
   width: 100%;
   background-color: #ddffff;
 }
 
-.maincontents {
-  width: 100%;
-  /* background-color: #whitesmoke; */
-  flex-wrap: wrap;
-  display: flex;
-  flex-flow: column;
-  height: auto;
+.kantaiHenseiAll>label {
+  display: none;
 }
 
-.henseiName {
-  resize: none;
-  height: 4em;
+.kantaiHenseiAll>details {
+  font-size: 10pt;
 }
 
 .btn_deckbuilder {
   height: auto;
   width: 100%;
-}
-
-.kantaiHenseiAll textarea {
   font-size: 0.7em;
 }
 
 .kantaiHenseiAll>select {
   width: 78px;
+}
+
+.maincontents {
+  width: 100%;
+  /*   background-color:whitesmoke; */
+  flex-wrap: wrap;
+  display: flex;
+  flex-flow: column;
+  height: auto;
 }
 
 .sheetselection {
@@ -53,13 +57,8 @@ dialog {
   vertical-align: top;
 }
 
-input:checked+.tab_class+.kantaiList {
-  display: block;
-  padding: 0em;
-  overflow-y: auto;
-  margin-top: 2pt;
-  margin-bottom: 2pt;
-  height: calc(100%);
+.henseiName {
+  resize: none;
 }
 
 textarea {
@@ -97,6 +96,7 @@ input:checked+.sheet_tab {
 input:checked+.sheet_tab+.sheetcontents {
   display: flex;
   height: auto;
+  /*   min-height:415px; */
 }
 
 .tab_class {
@@ -126,6 +126,17 @@ input:checked+.tab_class {
   color: white;
 }
 
+input:checked+.tab_class+.kantaiList {
+  display: block;
+  padding: 0em;
+  /*   height:calc(100vh - 200pt); */
+  overflow-y: auto;
+  margin-top: 2pt;
+  margin-bottom: 2pt;
+  height: calc(100%);
+  /*   min-height:280px; */
+}
+
 .kantaiHensei {
   display: block;
   float: none;
@@ -143,27 +154,29 @@ input:checked+.tab_class {
   color: white;
   margin: 2px;
   float: left;
-  line-height: 1em;
+  font-size: 0.8em;
+  line-height: 12px;
   padding: 2px;
-  width: calc(50% - 8px);
-  height: 70px;
+  width: calc(100%/4 - 8px);
+  max-height: calc(2em + 2px);
   position: relative;
 }
 
 .henseiItem {
-  border-radius: 3px;
   list-style: none;
   background-color: gray;
   color: white;
   margin: 2px;
+  float: none;
+  flex-flow=nowrap;
   margin-left: auto;
   margin-right: auto;
-  float: none;
-  line-height: 16px;
-  width: 133px;
-  height: 70px;
+  font-size: 0.8em;
+  line-height: 12px;
+  padding: 2px;
+  width: 65px;
+  height: calc(2em + 2px);
   position: relative;
-  border: 2px solid;
 }
 
 .kantaiList {
@@ -175,31 +188,74 @@ input:checked+.tab_class {
 }
 
 .shipimg {
+  /*  display:none; */
   width: 100%;
   draggable: false;
+  /*   padding-top:9px; */
+  transform: translate(0em, 0.6em);
 }
 
 .shiplv {
   float: left;
-  font-size: 0.9em;
-  transform: translate(0.1em, -0.1em);
+  left: 0px;
+  /*   font-size:1em; */
+  position: absolute;
+  transform-origin: top left;
+  transform: translate(0.2em, -0.25em) scale(0.8, 0.8);
+  color: #ffffff;
+  background-color: #808080e8;
+  z-index: 1;
 }
 
-.shiparea {
-  text-align: right;
+.henseiItem>.shiparea {
   float: right;
-  margin-right: 0.2em;
-  transform: translate(0.1em, -0.2em);
+  position: absolute;
+  /*   top:2em; */
+  /*   font-size:0.7em;   */
+  transform-origin: top right;
+  padding-top: 0.2em;
+  padding-right: 0.2em;
+  transform: translate(-0.1em, -0.05em) scale(0.70, 0.70);
+  right: 0pt;
 }
+
+.kantaiItem>.shiparea {
+  float: right;
+  position: absolute;
+  /*   top:2em; */
+  /*   font-size:0.7em;   */
+  transform-origin: top right;
+  padding-top: 0.2em;
+  padding-right: 0.2em;
+  transform: translate(-0.15em, -0.05em) scale(0.75, 0.75);
+  right: 0pt;
+}
+
+
+/* .henseiItem > .shipname{
+  white-space: nowrap;
+  overflow: hidden;
+  padding:0.2em;
+  
+  float:none;
+} */
 
 .shipname {
   white-space: nowrap;
   overflow: hidden;
-  padding: 0.2em 0em;
+  /*   padding:0.1em; */
+  width: auto;
+  max-width: 100%;
+  float: left;
+  transform-origin: top left;
+  transform: translate(-0em, -1.3em) scale(1, 1);
+  padding-top: 0.5px;
+  background-color: rgb(128 128 128 / 70%);
 }
 
 .kantaiHenseiAll {
   vertical-align: top;
+  width: 80px;
 }
 
 .henseiText {
@@ -237,12 +293,11 @@ input:checked+.tab_class {
   display: block;
   background-color: whitesmoke;
   width: 300px;
-  height: auto;
 }
 
 .splitRight {
-  overflow-x: scroll;
   overflow-y: auto;
+  overflow-x: scroll;
   background-color: #ddffff;
   /*   flex-grow: 1; */
   height: auto;
@@ -259,6 +314,7 @@ input:checked+.tab_class {
 
 .txt_fudaText {
   width: 100px;
+  white-space: nowrap;
 }
 
 .kantaiList {

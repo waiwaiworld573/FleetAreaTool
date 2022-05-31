@@ -10,7 +10,7 @@
   gtag('js', new Date());
   gtag('config', 'G-WS0H7X957G');
 </script>
-
+      
 <!--*************************************************************************** 
 ファイル構成でお察しかと思いますが動けばよかろうのコピペつぎはぎコードです        
 人によっては気分が悪くなるおそれがありますので読む場合はご注意ください
@@ -720,20 +720,145 @@
 ["900","500","山汐丸","やましおまる","補給艦","不明","25051",["900","717"]],
 ["903","503","天霧改二","あまぎり","駆逐艦","綾波型","14156",["390","908","479","903"]],
 ["908","508","天霧改二丁","あまぎり","駆逐艦","綾波型","14157",["903","390","908","479"]],
-["1496","406","Colorado改","コロラド","戦艦","Colorado級","32012",["601","1496"]]
+["1496","406","Colorado改","コロラド","戦艦","Colorado級","32012",["601","1496"]],
+["719","1719","伊201改","い201","潜水艦","不明","22292",["881","719"]],
+["720","1720","早潮改","はやしお","駆逐艦","陽炎型","16052",["886","720"]],
+["881","481","伊201","い201","潜水艦","不明","22291",["881","719"]],
+["886","486","早潮","はやしお","駆逐艦","陽炎型","16051",["886","720"]]
 ];
       // ページ読み込み時に実行
       window.onload = function () {
         preLoadImg(); // 画像プリロード
         loadData(); //セーブデータのロード
-      　if (location.search != ''){
-             alert(location.search);
-       }
+        readFireBase();//クエリがある場合firebaseからデータを読んでシートを作成
       }
+          
+//クエリがある場合firebaseからデータを読んでシートを作成
+async function readFireBase(){
+
+const searchParams = new URLSearchParams(window.location.search)
+      let re;
+      　if (searchParams.has('key')){
+
+      if (localStorage.getItem('dataKey' + searchParams.get('key')) !== null){
+　　　　　//ローカルストレージに該当キーのデータがあるとき
+          re = localStorage.getItem('dataKey' + searchParams.get('key'));
+          console.log('ストレージから読み込みました');
+      }else{  
+　　　　　//ローカルストレージに該当キーのデータがないとき
+          re = await downloadTxt(searchParams.get('key'));
+            console.log('firebaseから読み込みました');
+      }
+          if (re === "nodata" || re === "error"){
+            alert('データが読み込めませんでした');
+          }else{
+
+            let saveDataArray = JSON.parse(re);
+                 saveDataArray[0][3] = decompKantaiJouhou(saveDataArray[0][3]);
+            if (checkSaveDataArray(saveDataArray)){                
+              if (saveDataArray !== null) {
+                    //ストレージデータに保存
+                localStorage.setItem('dataKey' + searchParams.get('key'), re);
+                for (let sDA of saveDataArray) {
+                  MakeSheet(sDA[0], sDA[1], sDA[2], sDA[3], sDA[4], sDA[5]);
+                }
+              }
+            }else{
+              alert('データを読み込みません');
+            }
+          }
+        }
+}
+
+
+function checkSaveDataArray(saveDataArray){
+//データ構造の大項目の構成を確認
+if (saveDataArray[0].length !== 6){
+  return false;
+}
+//シートタイトルの文字数
+if (saveDataArray[0][0].length > 20){
+  return false;
+}
+//札情報
+if (saveDataArray[0][1].length !== 10){
+  return false;
+}
+for (let fudaInfo of saveDataArray[0][1]){
+      if (fudaInfo.length !== 3){
+        return false;
+      }
+      if (fudaInfo[0].length > 10){
+        return false;
+      }
+      //rgb(255,255,255)のテキスト長さより長い
+      if (fudaInfo[1].length > 18 || fudaInfo[2].length > 18){
+        return false;
+      }
+}
+//札選択インデックス
+if (saveDataArray[0][2] < 0 || saveDataArray[0][2] > 9){
+  return false;
+}
+//艦隊情報テキスト
+if (saveDataArray[0][3].length > 60000 ){
+  return false;
+}
+//ソートセレクトのインデックス
+if (saveDataArray[0][4] < 0 || saveDataArray[0][4] > 5){
+  return false;
+}
+//編成の数
+if (saveDataArray[0][5].length > 200){
+  return false;
+}
+//各編成の内容確認
+for (let henseiInfo of saveDataArray[0][5]){
+
+//編成情報の要素数
+if (henseiInfo.length !== 6){
+  return false;
+}
+//編成名の文字長さ
+if (henseiInfo[0].length > 200){
+  return false;
+}
+//札選択のインデックス
+if (henseiInfo[1] < 0 || henseiInfo[1] > 9){
+  return false;
+}
+//編成部隊選択のインデックス
+if (henseiInfo[2] < 0 || henseiInfo[2] > 4){
+  return false;
+}
+//編成部隊の数
+if (henseiInfo[3].length !==  [6, 12, 12, 12, 7][henseiInfo[2]]){
+  return false;
+}
+for (let hII of henseiInfo[3]){
+      //編成艦娘の名称
+if (!/^ship\d+/.test(hII)){
+  return false;
+}
+}
+if (henseiInfo[4].length > 200){
+  return false;
+}
+if (henseiInfo[5].length > 500){
+  return false;
+}
+}
+  return true;
+}
+          
       //セーブデータのロード
       function loadData() {
         let json = localStorage.getItem("saveDataArray");
+
+          // console.log('jsonこれを使ってsaveDataArrayを生成',json);  
         let saveDataArray = JSON.parse(json);
+
+          // console.log('saveDataArrayこれを引数として使って展開',saveDataArray);  
         if (saveDataArray !== null) {
           for (let sDA of saveDataArray) {
             MakeSheet(sDA[0], sDA[1], sDA[2], sDA[3], sDA[4], sDA[5]);
@@ -910,7 +1035,9 @@
             h
           ]);
         }
+      　// console.log('saveDataArrayこれを使ってjsonを生成',saveDataArray);
         let json = JSON.stringify(saveDataArray, undefined, 1);
+      　// console.log('これをsaveDataArrayにセット',json);
         localStorage.setItem('saveDataArray', json);
         alert('ページをセーブしました');
       }
@@ -1155,7 +1282,14 @@
           document.getElementById("cssLink").href = "style/style.css";
           break;
         case 1:
-          document.getElementById("cssLink").href = "style/smallstyle.css";
+          document.getElementById("cssLink").href = "style/smallstyle_div3.css";
+          break;
+        case 2:
+          document.getElementById("cssLink").href = "style/smallstyle_div4.css";
+          break;
+        case 3:
+          document.getElementById("cssLink").href = "style/smallstyle_noimg.css";
+          break;            
         }
             // setTimeout(waitStyleChange, 200);
       }
@@ -1191,6 +1325,8 @@
         }
         //ダイアログを閉じる
         event.target.closest('dialog').close();
+        //共有リンク作成ボタンを復活させる
+        resetLink();
       }
       //札の色情報を読み込む
       function readFudaColor() {
@@ -1224,7 +1360,6 @@
         //札設定ダイアログを作成
         e2 = document.createElement("dialog");
         e2.classList.add('dlg_fudaColor');
-        e2.style.zIndex = 1;
         e3 = document.createElement("label");
         e3.append(document.createTextNode('出撃札の設定'));
         e2.appendChild(e3.cloneNode(true));
@@ -1233,6 +1368,7 @@
         for (let i = 0; i < 10; i++) {
           e3 = document.createElement("input");
           e3.setAttribute('type', 'text');
+          e3.setAttribute('oninput','restTextLength(10)');    
           e2.appendChild(e3.cloneNode(true));
           e3 = document.createElement("input");
           e3.setAttribute('type', 'color');
@@ -1272,7 +1408,6 @@
         //艦隊設定ダイアログを作成
         e2 = document.createElement("dialog");
         e2.classList.add('dlg_importkantai');
-        e2.style.zIndex = 1;
         e3 = document.createElement("label");
         e3.append(document.createTextNode('艦隊の読み込み'));
         e2.appendChild(e3.cloneNode(true));
@@ -1302,6 +1437,7 @@
         e3 = document.createElement("textarea");
         e3.style.width = '100%';
         e3.setAttribute('onfocus', "this.select();");
+        e3.setAttribute('oninput', "restTextLength(60000)");
         e2.appendChild(e3.cloneNode(true));
         //<br>
         e2.appendChild(document.createElement('br'));
@@ -1467,6 +1603,8 @@
         //        e5 = document.createElement("input");　
         e5 = document.createElement("textarea");　
         e5.classList.add('henseiName');
+        e5.setAttribute('oninput','restTextLength(200)'); 
+            
         //        e5.setAttribute('type', 'text');
         f.append(e5);　 //<br>
         f.append(document.createElement("br"));
@@ -1516,7 +1654,7 @@
         e6 = document.createElement("textarea");
         // e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_kantaiCaution");
-        e6.setAttribute('oninput', 'ChangeHenseiList();');
+        e6.setAttribute('oninput', 'restTextLength(200);ChangeHenseiList();'); 
         e5.appendChild(e6.cloneNode(true));　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
@@ -1527,7 +1665,7 @@
         e6 = document.createElement("textarea");
         // e6.setAttribute('onmouseup' , 'adjustLayout();');
         e6.classList.add("txtr_kantaitokkou");
-        e6.setAttribute('oninput', 'ChangeTokkouList();');
+        e6.setAttribute('oninput', 'restTextLength(500);ChangeTokkouList();');
         e5.appendChild(e6.cloneNode(true));　
         f.append(e5.cloneNode(true));
         e5 = document.createElement("details");
@@ -1757,25 +1895,7 @@
           
       //cssへの敗北
       function adjustLayout() {
-        // let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
-        // if (selectedSheets.length !==0){
-        //    let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
-        //    resizeSheet.querySelector('.area').style.height = resizeSheet.querySelector('.splitRight').style.height ;
-        // }
-        // let lRect;
-        // let sRect;
-        // let heightMemo;
-        // let selectedSheets = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
-        // if (selectedSheets.length !==0){
-        //   let resizeSheet = selectedSheets[0].nextElementSibling.nextElementSibling;
-        //   let resizeList = resizeSheet.getElementsByClassName('area')[0].querySelector('input[type="radio"]:checked').nextElementSibling.nextElementSibling;
-        //   lRect = resizeList.getBoundingClientRect();
-        //   heightMemo=lRect.height;
-        //   sRect = resizeSheet.querySelector('.kantaiHenseiAll').getBoundingClientRect();
-        //   resizeList.style.height = sRect.height + sRect.top - lRect.top;
-        //   lRect = resizeList.getBoundingClientRect();
-        //   return heightMemo !== lRect.height;
-        // }
+
       }
       //新規シートのタブを作成して選択する
       function MakeSheetTab(sheetName) {
@@ -1799,7 +1919,8 @@
         e22.setAttribute('type', 'text');
         e22.value = sheetName;
         e22.draggable = false;
-        e22.setAttribute('onclick', 'setTabFocus()');
+        e22.setAttribute('onclick', 'setTabFocus();resetLink();');
+        e22.setAttribute('oninput', 'restTextLength(20);resetLink();');
         e2.append(e22);
         let e23 = document.createElement('button');
         e23.classList.add('closeButton');
@@ -1907,6 +2028,7 @@
             dealKantaiItemFuda(dragObj);
             dragObj.remove();
             checkHenseiAndTokkou(shipInfoText); //編成と特効状態のチェック
+            resetLink();
             return;
           }
         }
@@ -2042,6 +2164,7 @@
           }
           event.currentTarget.style.borderLeft = '';
           event.currentTarget.style.borderRight = '';
+          resetLink();
         }
       }
       //編成艦娘のドラッグを開始
@@ -2104,6 +2227,7 @@
           //艦隊艦娘の編成へのセットをトライ
           trySetHenseiItem(dragObj, event.currentTarget);
         }
+        resetLink();
       }
       //艦隊艦娘のドラッグを開始
       function kantaiItemDragStart() {
@@ -2365,14 +2489,14 @@
           r.push([fName, defaultFudaTextColor, defaultFudaBackColor]);
         }
         r=[
-          ["南西方面" ,"rgb(195, 233, 150)", "rgb(51, 84, 22)"],
-          ["第三十一" ,"rgb(240, 184, 208)", "rgb(133, 17, 60)"],
-          ["連合艦隊" ,"rgb(113, 181, 235)", "rgb(17, 57, 89)"],
-          ["輸送部隊" ,"rgb(219, 195, 101)", "rgb(53, 43, 14)"],
-          ["第十六戦隊" ,"rgb(213, 218, 246)", "rgb(60, 68, 152)"],
-          ["シマ船団" ,"rgb(179, 179, 179)", "rgb(41, 40, 35)"],
-          ["遊撃部隊" ,"rgb(186, 168, 81)", "rgb(40, 33, 2)"],
-          ["決戦艦隊" ,"rgb(62, 173, 53)", "rgb(8, 39, 12)"],
+          ["R方面防備" ,"rgb(195, 233, 150)", "rgb(51, 84, 22)"],
+          ["進出第一陣" ,"rgb(200, 200, 200)", "rgb(4, 4, 3)"],
+          ["進出第二陣" ,"rgb(235, 225, 198)", "rgb(4, 4, 3)"],
+          ["機動部隊" ,"rgb(113, 181, 235)", "rgb(17, 57, 89)"],
+          ["方面護衛隊" ,"rgb(219, 219, 1)", "rgb(67, 67, 0)"],
+          ["札6" ,"rgb(0, 0, 0)", "rgb(255, 255, 255)"],
+          ["札7" ,"rgb(0, 0, 0)", "rgb(255, 255, 255)"],
+          ["札8" ,"rgb(0, 0, 0)", "rgb(255, 255, 255)"],
           ["札9" ,"rgb(0, 0, 0)", "rgb(255, 255, 255)"],
           ["札10" ,"rgb(0, 0, 0)", "rgb(255, 255, 255)"]
           ];
@@ -2474,6 +2598,7 @@
         let obj2 = obj.closest('tr');
         let idx = 0;
         let memoidx;
+        if (obj2.getElementsByClassName('kantaiHenseiAll').length <= 200){
         for (let o of obj2.getElementsByClassName('kantaiHenseiAll')) {
           idx++;
           if (o === obj) {
@@ -2487,6 +2612,10 @@
         obj.closest('tr').getElementsByClassName('kantaiHenseiAll')[memoidx].getElementsByClassName('txtr_kantaitokkou')[0].value = obj.getElementsByClassName('txtr_kantaitokkou')[0].value;
         obj.closest('tr').getElementsByClassName('kantaiHenseiAll')[memoidx].getElementsByClassName('lit_kantaiSize')[0].selectedIndex = obj.getElementsByClassName('lit_kantaiSize')[0].selectedIndex;
         obj.closest('tr').getElementsByClassName('kantaiHenseiAll')[memoidx].getElementsByClassName('lst_fudaList')[0].selectedIndex = obj.getElementsByClassName('lst_fudaList')[0].selectedIndex;
+        }else{
+           alert("編成数上限です(200)");   
+        }
+      
       }
       //編成セットを削除する
       function removeHensei() {
@@ -2510,10 +2639,167 @@
         }
       }
 
+
           
+function btn2(){
+
+        saveDataArray = [];
+        let r, f, h, s;
+let kanSel = document.querySelectorAll('input[type="radio"][name="sheet_name"]:checked');
+      // console.log(kanSel[0],kanSel.length);
+      if (kanSel.length === 1){
+      //iをcheckedのsheetcontentsにする
+        i = kanSel[0].nextElementSibling.nextElementSibling; 
+        r = [];
+        f = i.getElementsByClassName('lst_fudaList')[0];
+        for (let k = 0; k < f.length; k++) {
+          r.push([
+            f[k].innerText,
+            f[k].style.color,
+            f[k].style.backgroundColor
+          ]);
+        }
+          h = [];
+          for (let f of i.getElementsByClassName('kantaiHenseiAll')) {
+            s = [];
+            for (let g of f.getElementsByClassName('henseiItem')) {
+              s.push(g.classList[0]);
+            }
+            h.push([
+              f.getElementsByClassName('henseiName')[0].value,
+              f.getElementsByClassName('lst_fudaList')[0].selectedIndex,
+              f.getElementsByClassName('lit_kantaiSize')[0].selectedIndex,
+              s,
+              f.getElementsByClassName('txtr_kantaiCaution')[0].value,
+              f.getElementsByClassName('txtr_kantaitokkou')[0].value
+            ]);
+          }
+          saveDataArray.push([
+            i.previousElementSibling.getElementsByClassName('sheet_name_label')[0].value,
+            r,
+            i.getElementsByClassName('lst_fudaList')[0].selectedIndex,
+            i.getElementsByClassName('kantaiJouhou')[0].value,
+            i.getElementsByClassName('lst_ListSort')[0].selectedIndex,
+            h
+          ]);
+            //艦隊情報を圧縮
+        saveDataArray[0][3] = compKantaiJouhou(saveDataArray[0][3]);
+        let json = JSON.stringify(saveDataArray, undefined, 1);
+           
+        if (json.length < 200000){    
+          uploadTxt(json) ;
+          button2.disabled = true;
+        }else{
+              alert('データ量が多いようです\n艦隊が二重で登録されてないかチェックしたり\n編成数や内部のテキストをいい感じに減らしてください');
+        }
+      }
+}
+function resetLink(){
+  if (!document.querySelector("#dlg_shareLink").open){
+  document.querySelector("#button2").disabled = false;
+  document.querySelector("#shareLink").innerHTML = "";
+  document.querySelector("#shareLink").href = "";
+  }
+}
+
+function compKantaiJouhou(t){
+return t.replaceAll('"api_ship_id"','#s').replaceAll('"api_lv"','#l').replaceAll('"api_kyouka"','#k').replaceAll('"api_exp"','#e');
+}
+
+function decompKantaiJouhou(t){
+return t.replaceAll('#s','"api_ship_id"').replaceAll('#l','"api_lv"').replaceAll('#k','"api_kyouka"').replaceAll('#e','"api_exp"');      
+}
+
+          
+function restTextLength(leng){
+   if ((event.target.nodeName === "TEXTAREA") || (event.target.nodeName === "INPUT" &&　event.target.type === "text" )){
+       if (event.target.value.length > leng){
+             event.target.value = event.target.value.substr(0, leng);
+             alert("文字数限度("+ (leng) + "字)を超えています");
+       }
+   }
+  //文字列操作でリンクを復旧
+  resetLink();
+}
     </script>
   </head>
   <body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js";
+  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyA79flqx2gOiLajd3oCMB5r0iFHzX3Oaj4",
+    authDomain: "fleetareatool.firebaseapp.com",
+    databaseURL: "https://fleetareatool-default-rtdb.firebaseio.com",
+    projectId: "fleetareatool",
+    storageBucket: "fleetareatool.appspot.com",
+    messagingSenderId: "492204216473",
+    appId: "1:492204216473:web:8b6fb5cc64dfb2eb73a808",
+    measurementId: "G-WS0H7X957G"
+  };
+//promise方式でのトライ
+window.downloadTxt = function (key) {
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db =getDatabase(app);
+  const dbRef = ref(db,"dataArray/" + key);
+  return new Promise((resolve) =>{
+      
+get(dbRef).then((snapshot) => {
+var object = snapshot.val();
+resolve( object.data);
+})
+
+});
+}
+
+
+
+//await方式でのトライ
+// window.downloadTxt = async function (key) {
+//   // Initialize Firebase
+//   const app = initializeApp(firebaseConfig);
+//   // const analytics = getAnalytics(app);
+//   const db =getDatabase(app);
+//   const dbRef = ref(db,"dataArray/" + key);
+// return get(dbRef).then((snapshot) => {
+//   if (snapshot.exists()) {
+//         console.log('test1');
+//         return snapshot.val();
+//   } else {
+//     return "データが見つからないらしいです";
+//   }
+// }).catch((error) => {
+//     return "エラーらしいです";
+// });
+//       console.log('test2');
+// }
+      
+//データのアップロード
+window.uploadTxt = function (txt) {
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db =getDatabase(app);
+  const msg = { "data": txt }
+  const dbRef = ref(db,"dataArray");
+  const newPostRef = push(dbRef);
+  set(newPostRef, msg);
+　let getUrlKey = String(newPostRef).split("/");
+  let urlTxt ="https://" + location.hostname + location.pathname + "?key=" + getUrlKey[getUrlKey.length -1];
+  document.querySelector("#shareLink").innerHTML = urlTxt;
+  document.querySelector("#shareLink").href = urlTxt;
+}
+
+</script>  
 
     <div class = "information">
       <details open >
@@ -2533,7 +2819,7 @@
 　　艦隊分析形式の艦隊データテキストの取得方法については各自で調べて下さい<br>                  
 　　七四式だと編成情報右クリックで簡単に取得できます<br>
 </div>
-<img src="desc/図1.png" ><br>
+<img src="desc/図1.png" ><br><br>
              </details>                   
             <details style="padding-left:1em;" open >
               <summary>基本操作</summary>
@@ -2544,7 +2830,7 @@
 上部ツール欄でページの保存、編成のCSV出力、表示形式の切り替えが可能<br>
         
 
-<img src="desc/図2.png" ><br>
+<img src="desc/図2.png" ><br><br>
       </div>
              </details>                   
             <details style="padding-left:1em;" open >
@@ -2556,13 +2842,30 @@
 <div>
 各編成で個別に割り当てられた機能について<br>
 ・「編成条件」のテキストエリアに図のような式を入れると、全ての式を満たさない限り編成の背景色が変化する<br>
+   艦娘の名前は完全一致(榛名改二と榛名改は別カウント)、艦種は以下のテキストが使用可能<br><br>
+海防艦、駆逐艦、軽空母、軽巡洋艦、工作艦、航空巡洋艦、航空戦艦、重巡洋艦、重雷装巡洋艦、<br>
+巡洋戦艦、水上機母艦、正規空母、戦艦、潜水艦、潜水空母、潜水母艦、装甲空母、補給艦、揚陸艦、練習巡洋艦<br><br>
 ・「特効情報」のテキストエリアに図のように艦娘名を入れると編成された艦娘の背景色が変化する<br>
-・「外部連携」のテキストエリアをクリックすると編成の通りのデッキビルダー形式のテキストを生成する<br>
-<img src="desc/図3.png" ><br>
+図の例だと = ?? で特効倍率を入力していますが現状倍率の大きさを示す機能はなく、<br>
+艦娘名だけで改行しても特効艦表示が機能する<br><br>
+・「外部連携」のテキストエリアをクリックすると編成の通りのデッキビルダー形式のテキストを生成する<br><br>
+<img src="desc/図3.png" ><br><br>
 
 </div>
              </details>      
 
+                  <details style="padding-left:1em;" open >
+              <summary style ="font-size:1.11em;">編成シートの共有</summary>
+<div>
+選択しているシートの艦隊と編成の内容を共有するリンクを作成する<br>
+リンクを開くとセーブされているページに共有したシートが追加される<br>
+<br>
+
+<img src="desc/図5.png" ><br><br>
+</div>
+             </details>      
+      
+      
                   <details style="padding-left:1em;" open >
               <summary style ="font-size:1.11em;">別シートの艦隊によるシート内編成の再現</summary>
 <div>
@@ -2570,7 +2873,7 @@
 艦娘の割り当ては右側の編成から優先的に行い、改装段階も含めた同じ艦の中から同じ札が付いた艦娘とレベルが高い艦娘を優先して編成する<br>
 編成ができなかった箇所には「編成可能艦なし」と記載のある艦娘が編成されるが、ページ内の扱いは「編成なし」と同じとなる<br>
 
-<img src="desc/図4.png" ><br>
+<img src="desc/図4.png" ><br><br>
 </div>
              </details>      
 
@@ -2587,7 +2890,6 @@
             <details style="padding-left:1em;" >
               <summary>メモ</summary>
 <div style ="font-size:0.9em;">
-・シートのデータを公開可能な共有リンク生成(firebase？)<br>
 ・セーブはオート化？<br>
 ・ページエレメントの生成はテンプレートファイルから読み込み？<br>
 ・マウスオーバー時のカーソルの変更<br>
@@ -2604,10 +2906,26 @@
               <label>　ツール　</label>
               <input type = 'button' value = 'セーブ' onclick = 'MakeAllSaveData();'>
               <input type = 'button' value = 'シートをcsvで出力' onclick = 'saveCsvFile();'>
+<!--           <input type = 'text' id = 'text11' oninput = 'restTextLength(2)'> -->
+<!--           <textarea oninput = 'restTextLength(2)'></textarea> -->
               <select onchange = "changeStyleSheet();">
                 <option>表示形式：通常</option>
-                <option>表示形式：省スペース</option>
+                <option>表示形式：省スペース1</option>
+                <option>表示形式：省スペース2</option>
+                <option>表示形式：省スペース3</option>
               </select>
+<!--                         <input type = 'button' id = 'button1' value = 'データ読み込みテスト' onclick = 'btn1();'> -->
+                        <input type = 'button' id = 'button3' value = 'シート情報共有' onclick = 'dlg_shareLink.show();'>
+          <dialog id ="dlg_shareLink">
+              アクティブなシートを共有するリンクを作成します。<br>
+              このサイトで編成情報をすでに保存している場合は<br>
+              リンクへのアクセスにより共有したシートが追加されます。<br>
+              <input type = 'button' id = 'button2' value = '共有リンク作成' onclick = 'btn2();'>
+            　<br>
+              <a id = "shareLink" href=""></a><br>
+              <input type = 'button' style = "float:right;" value = '閉じる' onclick="closeSettingDialog()">
+          </dialog>
+
     </div>
     <div class = "maincontents">
       <div class = "sheetselection">
@@ -2616,5 +2934,7 @@
         <div class = "sheetcontents"></div>
       </div>
     </div>
+
+        
   </body>
 </html>
